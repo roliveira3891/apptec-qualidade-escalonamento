@@ -79,14 +79,16 @@ async function gerarRelatoriosPorCargo() {
 
     const total = itens.reduce((sum, i) => sum + Number(i.valor), 0);
 
-    let msg = `📌 *ESCALONAMENTO – ${cargo.nome}*\n`;
-    msg += `Clusters: ${itens.length}\n\n`;
+    let msg = `❗ *ESCALONAMENTO – ${cargo.nome}*\n`;
 
-    msg += '```\n';
-    itens.forEach(i => {
-      msg += `${i.cidade}|${i.valor}\n`;
-    });
-    msg += '```\n';
+
+   msg += '```\n'; 
+
+itens.forEach(i => {
+  msg += `${i.cidade} | ${String(i.valor).padStart(3, ' ')}\n`;
+});
+
+msg += '```\n'; 
 
     // ✅ TOTAL NO FINAL
     msg += `*Total:* ${total}`;
