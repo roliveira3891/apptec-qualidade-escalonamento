@@ -1,0 +1,23 @@
+{
+  "name": "evolution-wpp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isabella-sn/evolution-wpp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/isabella-sn/evolution-wpp/issues"
+  },
+  "homepage": "https://github.com/isabella-sn/evolution-wpp#readme",
+  "description": "",
+  "dependencies": {
+    "mariadb": "^3.5.2"
+  }
+}
