@@ -1,7 +1,6 @@
-require('dotenv').config();// Carrega as variáveis salvas no .env
+require('dotenv').config();
 
 const mariadb = require('mariadb');
-
 const pool = mariadb.createPool({
 
 
