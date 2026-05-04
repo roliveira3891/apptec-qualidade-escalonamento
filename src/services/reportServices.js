@@ -21,39 +21,52 @@ function formatarCidade(nome) {
 
 async function gerarRelatoriosPorCargo() {
 
-  const sql = `
-    SELECT
-      COALESCE(t.cluster, '(Sem)') AS cluster,
-      SUM(t.minutos >=  60 AND t.minutos < 120) AS coord,
-      SUM(t.minutos >= 120 AND t.minutos < 180) AS ger,
-      SUM(t.minutos >= 180 AND t.minutos < 240) AS ger_s,
-      SUM(t.minutos >= 240 AND t.minutos < 300) AS dir_r,
-      SUM(t.minutos >= 300 AND t.minutos < 360) AS dir_e,
-      SUM(t.minutos >= 360)                     AS vp
-    FROM (
-      SELECT
-        cluster,
-        TIMESTAMPDIFF(
-          MINUTE,
-          TIMESTAMP(
-            date,
-            STR_TO_DATE(SUBSTRING_INDEX(time_slot, '-', 1), '%H:%i')
-          ),
-          NOW()
-        ) AS minutos
-      FROM ne.base_eta_nodejs
-      WHERE
-        astatus = 'Nao Iniciada'
-        AND date = CURDATE()
-        AND tecnologia = 'GPON'
-        AND time_slot <> 'Dia Completo'
-        AND time_slot REGEXP '^[0-9]{2}:[0-9]{2}-'
-    ) t
-    GROUP BY t.cluster
-    ORDER BY t.cluster;
-  `;
 
-  const rows = await db.query(sql);
+  const moment = require('moment-timezone');
+
+  const agoraSP = moment()
+    .tz('America/Sao_Paulo')
+    .format('YYYY-MM-DD HH:mm:ss');
+
+  console.log(agoraSP)
+
+
+  let sql = `SELECT
+        COALESCE(t.cluster, '(Sem)') AS cluster,
+        SUM(t.minutos >=  100 AND t.minutos < 120) AS coord,
+        SUM(t.minutos >= 120 AND t.minutos < 180) AS ger,
+        SUM(t.minutos >= 180 AND t.minutos < 240) AS ger_s,
+        SUM(t.minutos >= 240 AND t.minutos < 300) AS dir_r,
+        SUM(t.minutos >= 300 AND t.minutos < 360) AS dir_e,
+        SUM(t.minutos >= 360)                     AS vp
+      FROM (
+        SELECT
+          b.cluster,
+          TIMESTAMPDIFF(
+            MINUTE,
+            TIMESTAMP(
+              b.date,
+              STR_TO_DATE(SUBSTRING_INDEX(b.time_slot, '-', 1), '%H:%i')
+            ),
+            ?
+          ) AS minutos
+        FROM ne.base_eta_nodejs b
+        WHERE
+          b.astatus = 'Nao Iniciada'
+          AND b.date = CURDATE()
+          AND b.time_slot <> 'Dia Completo'
+          AND b.tecnologia = 'GPON'
+          AND b.time_slot REGEXP '^[0-9]{2}:[0-9]{2}-'
+      ) t
+      GROUP BY t.cluster
+      ORDER BY t.cluster;
+    `;
+
+
+
+
+  const rows = await db.query(sql, [agoraSP]);
+  console.log(rows)
   if (!rows || rows.length === 0) return [];
 
   const cargos = [
@@ -79,19 +92,23 @@ async function gerarRelatoriosPorCargo() {
 
     const total = itens.reduce((sum, i) => sum + Number(i.valor), 0);
 
-    let msg = `❗ *ESCALONAMENTO – ${cargo.nome}*\n`;
+    let msg = `🚨 *ESCALONAMENTO - Atividades não Iniciadas – ${cargo.nome}*\n`;
 
 
-   msg += '```\n'; 
+    msg += '```\n';
 
-itens.forEach(i => {
-  msg += `${i.cidade} | ${String(i.valor).padStart(3, ' ')}\n`;
-});
+    itens.forEach(i => {
+      msg += `${i.cidade} | ${String(i.valor).padStart(3, ' ')}\n`;
+    });
 
-msg += '```\n'; 
+
+    msg += '```\n';
 
     // ✅ TOTAL NO FINAL
-    msg += `*Total:* ${total}`;
+    msg += `*Total:* ${total}\n\n`;
+    msg += `🔗*Link para ver os PONs:*\n`;
+    msg += `http://10.59.112.107/escalonamento\n\n`;
+    msg += `_enviado automáticamente pelo GOPER_`;
 
     mensagens.push(msg);
   });

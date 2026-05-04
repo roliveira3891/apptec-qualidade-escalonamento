@@ -11,30 +11,45 @@ async function executarTarefa() {
   try {
     // 1. Gera os relatórios separados por cargo
     const mensagens = await gerarRelatoriosPorCargo();
+    console.log('gerarRelatoriosPorCargo')
 
     // 2. Se não houver mensagens, apenas loga
     if (!mensagens || mensagens.length === 0) {
       console.log('Nenhum escalonamento para enviar.');
       return;
     }
+    console.log('mensagens')
+    
 
     // 3. Envia cada mensagem (uma por cargo)
     for (const msg of mensagens) {
+      console.log('const msg of mensagens')
       await enviarParaWhatsapp(msg);
+      console.log('enviarParaWhatsapp')
     }
 
     console.log(`✅ ${mensagens.length} mensagem(ns) enviada(s) com sucesso.`);
+    process.exit();
 
   } catch (error) {
     console.error('❌ Erro no loop principal:', error.message || error);
+    process.exit();
   }
 }
 
 // Executa imediatamente ao iniciar
-executarTarefa();
+
+//executarTarefa();
+async function init() {
+  console.log('init')
+  await executarTarefa()
+  process.exit();
+}
+
+init()
 
 // Agenda para rodar a cada 30 minutos
-setInterval(executarTarefa, 30 * 60 * 1000);
+// setInterval(executarTarefa, 30 * 60 * 1000); 
 
 console.log('Bot de Escalonamento iniciado! Rodando a cada 30 min.');
 ``
