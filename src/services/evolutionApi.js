@@ -10,11 +10,11 @@ async function enviarParaWhatsapp(texto) {
         console.log('try evolution')
         // Envia os dados para a Evolution API via POST
         const axiosConfig = {
-            proxy: {
-                protocol: 'http',
-                host: process.env.PROXY_URL,
-                port: process.env.PROXY_PORT,
-            },
+            // proxy: {
+            //     protocol: 'http',
+            //     host: process.env.PROXY_URL,
+            //     port: process.env.PROXY_PORT,
+            // },
             headers: { 'apikey': process.env.EVOLUTION_KEY } 
         };
 

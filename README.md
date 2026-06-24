@@ -1,0 +1,1 @@
+# apptec-qualidade-escalonamento
