@@ -9,7 +9,7 @@ const pool = mariadb.createPool({
     password: process.env.DB_PASSWORD, // Senha
     database: process.env.DB_DATABASE, // Nome do banco de dados (ne )
     waitForConnections: true,      // Se o banco estiver cheio espera uma vaga
-    connectionLimit: 10,           // Máximo de 10 conexções simuâneas
+    connectionLimit: 1,           // Máximo de 10 conexções simuâneas
     queueLimit: 0,              // Sem limite de fila de espera
   });
 
